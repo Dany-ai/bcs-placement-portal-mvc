@@ -6,6 +6,8 @@
     <?php endif; ?>
 
     <form method="post" action="<?= URL_ROOT ?>/auth/login" class="form">
+        <?= $_csrfField ?? '' ?>
+
         <label>
             Email
             <input type="email" name="email" required>
