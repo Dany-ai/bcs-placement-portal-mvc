@@ -1,0 +1,19 @@
+# env
+.env
+.env.*
+
+# uploads / storage
+/public/uploads/
+/storage/
+/storage/**
+
+# sqlite db files (keep migrations)
+database/*.sqlite
+database/*.sqlite-shm
+database/*.sqlite-wal
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

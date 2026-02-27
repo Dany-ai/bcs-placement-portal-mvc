@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS employers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
+    contact_name VARCHAR(255) NULL,
+    phone VARCHAR(50) NULL,
+    address TEXT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

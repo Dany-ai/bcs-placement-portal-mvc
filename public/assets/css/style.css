@@ -1,0 +1,942 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #111827;
+    background: #f3f4f6;
+}
+
+a {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.page-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.site-header {
+    background: #0f172a;
+    color: #f9fafb;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #1f2937;
+}
+
+.nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.logo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.logo-mark {
+    background: #22c55e;
+    color: #022c22;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.logo-text {
+    font-size: 1rem;
+}
+
+.main-nav {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.95rem;
+}
+
+.main-nav a {
+    color: #e5e7eb;
+    padding: 0.3rem 0.5rem;
+    border-radius: 999px;
+}
+
+.main-nav a:hover {
+    background: #1f2937;
+    text-decoration: none;
+}
+
+.nav-auth {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.nav-user {
+    color: #9ca3af;
+}
+
+.site-main {
+    flex: 1;
+    padding: 2rem 0 3rem;
+}
+
+.site-footer {
+    background: #0b1120;
+    color: #9ca3af;
+    padding: 1.5rem 0;
+    font-size: 0.85rem;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-align: center;
+}
+
+.footer-note {
+    font-style: italic;
+}
+
+/* Layouts */
+
+.section {
+    margin-bottom: 2.5rem;
+}
+
+.section h1,
+.section h2 {
+    margin-bottom: 0.75rem;
+}
+
+.section-narrow {
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+}
+
+/* Hero */
+
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.6fr);
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.hero-text h1 {
+    font-size: clamp(2rem, 2.6vw, 2.6rem);
+    margin-bottom: 0.75rem;
+}
+
+.hero-text p {
+    font-size: 1rem;
+    color: #4b5563;
+    max-width: 36rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.hero-highlights {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Buttons */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #f9fafb;
+    border-color: #1d4ed8;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #0f766e;
+    color: #ecfeff;
+    border-color: #0d9488;
+}
+
+.btn-secondary:hover {
+    background: #0d9488;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #e5e7eb;
+    border-color: #374151;
+}
+
+.btn-outline:hover {
+    background: #111827;
+}
+
+/* Cards and grid */
+
+.card {
+    background: #ffffff;
+    border-radius: 0.9rem;
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    border: 1px solid #e5e7eb;
+}
+
+.card h2, .card h3 {
+    margin-top: 0;
+}
+
+.card-actions {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* Forms */
+
+.form {
+    display: grid;
+    gap: 1rem;
+}
+
+label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+textarea {
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    width: 100%;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+}
+
+/* Lists, badges, alerts */
+
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list li {
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: #e0f2fe;
+    color: #1d4ed8;
+    margin-left: 0.25rem;
+}
+
+.alert {
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.alert-success {
+    background: #ecfdf5;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.alert-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+/* Typography helpers */
+
+.muted {
+    color: #6b7280;
+}
+
+.small {
+    font-size: 0.8rem;
+}
+
+.tagline {
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+}
+
+/* Placement cards */
+
+.placement-card h3,
+.placement-card h2 {
+    margin-bottom: 0.25rem;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .nav-container {
+        flex-wrap: wrap;
+    }
+    .main-nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+    .nav-auth {
+        margin-left: auto;
+    }
+    .hero {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ⚡ NEW: Action buttons (Edit + Delete) */
+
+.action-btn {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.78rem;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.action-edit {
+    background: #16a34a; /* Green */
+}
+
+.action-edit:hover {
+    background: #15803d;
+}
+
+.action-delete {
+    background: #dc2626; /* Red */
+}
+
+.action-delete:hover {
+    background: #b91c1c;
+}
+
+.link-button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.link-button:hover {
+    text-decoration: none;
+}
+
+/* Small action buttons for placement actions */
+.btn-sm {
+    padding: 0.25rem 0.7rem;
+    font-size: 0.75rem;
+}
+
+.btn-edit {
+    background: #16a34a;      /* green */
+    color: #f9fafb;
+    border-color: #15803d;
+}
+
+.btn-edit:hover {
+    background: #15803d;
+}
+
+.btn-delete {
+    background: #dc2626;      /* red */
+    color: #f9fafb;
+    border-color: #b91c1c;
+}
+
+.btn-delete:hover {
+    background: #b91c1c;
+}
+
+/* =============================== */
+/*   HERO IMAGE (Home page only)   */
+/* =============================== */
+
+.hero-image-container {
+    margin: 1rem 0 2rem;
+    text-align: center;
+}
+
+.hero-image {
+    width: 650px;             /* Default desktop size */
+    max-width: 90%;           /* Mobile/tablet responsive scaling */
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    object-fit: cover;
+}
+.hero-text {
+    text-align: center;
+}
+.hero-text p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* Unified green registration buttons inside the hero cards */
+.hero-highlights .card .btn {
+    background: #22c55e !important;   /* Green background */
+    color: #000 !important;           /* Black text */
+    border: 1px solid #16a34a !important;
+    font-weight: 700 !important;      /* Bold text */
+}
+
+/* Hover effect */
+.hero-highlights .card .btn:hover {
+    background: #16a34a !important;   /* Darker green hover */
+    color: #000 !important;
+    font-weight: 700 !important;      /* Keep bold on hover */
+}
+/* Padding for Home Page */
+.home-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+}
+
+/* Benefits page background */
+.benefits-bg {
+    background-image: url('../images/pexels-googledeepmind-17483848.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Centered white title box */
+.benefits-title-box {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin: 0 auto 2rem auto;   /* Center */
+    text-align: center;         /* Center text */
+}
+
+/* Green title text */
+.benefits-title-box h1 {
+    color: #22c55e !important;
+    margin: 0;
+}
+
+/* Keep body text readable on background */
+.benefits-bg h2,
+.benefits-bg p,
+.benefits-bg li {
+    color: #000;
+}
+/* Placement page padding */
+.placements-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+/* Title box */
+.placements-title-box {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 0 auto 1.5rem auto;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Make title green */
+.placements-title-box h1 {
+    color: #22c55e;
+    margin: 0;
+}
+
+/* Green placement buttons */
+.placement-btn {
+    background: #22c55e !important;
+    color: #000 !important;
+    font-weight: 700;
+    border: 1px solid #16a34a !important;
+    border-radius: 999px;
+}
+
+.placement-btn:hover {
+    background: #16a34a !important;
+    color: #000 !important;
+}
+
+/* Add a subtle white overlay so text stays readable */
+.placement-page-bg * {
+    color: #000;  /* ensure text is readable */
+}
+
+
+/* ===========================
+   SFIA Skills Accordion (big, half-width)
+   =========================== */
+
+.skills-accordion {
+    margin-top: 1.5rem;
+}
+
+/* make accordion half the page width and centered */
+.skills-accordion-half {
+    max-width: 50%;
+    margin: 1.5rem auto 0 auto;
+}
+
+/* each accordion item */
+.skill-item {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid #111827;
+}
+
+/* header row */
+.skill-item summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.2rem;       /* keeps them big/tall */
+    background: #111827;
+    color: #f9fafb;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+/* hide default triangle marker */
+.skill-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.skill-item[open] summary {
+    background: #374151;
+}
+
+/* code + name */
+.skill-code {
+    font-weight: 700;
+    min-width: 4rem;
+}
+
+.skill-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+/* + / – icon on right */
+.skill-toggle {
+    font-size: 1.4rem;
+    line-height: 1;
+    font-weight: 700;
+    color: #a3e635;
+}
+
+/* expanded body */
+.skill-body {
+    padding: 1rem 1.2rem 1.2rem;
+    background: #000;
+    color: #e5e7eb;
+    border-top: 1px solid #4b5563;
+    font-size: 0.95rem;
+}
+/* ===========================
+   SFIA Skills Accordion – full-width black bars
+   =========================== */
+
+.skills-accordion {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* each accordion item */
+.skill-item {
+    border-radius: 0;
+    overflow: hidden;
+    background: #000;
+    border-bottom: 2px solid #111;  /* thin separator like the example */
+}
+
+/* header row */
+.skill-item summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* remove default triangle marker (Chrome/Safari) */
+.skill-item summary::-webkit-details-marker {
+    display: none;
+}
+/* remove marker in Firefox/others */
+.skill-item summary::marker {
+    content: "";
+}
+
+/* left text (code + name) */
+.skill-text {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.skill-code {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.skill-name {
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* + / – icon on the right */
+.skill-toggle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #c3ff00;   /* bright yellow-green like the example */
+    margin-left: 1rem;
+}
+
+/* expanded content */
+.skill-body {
+    padding: 1rem 1.5rem 1.2rem;
+    background: #000;
+    color: #f9fafb;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border-top: 1px solid #111;
+}
+.skills-padding {
+    padding: 2rem 4rem;
+}
+
+.skills-title-box {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.skills-title {
+    color: #16a34a;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+/* ===========================
+   SFIA Skills Page Layout
+   =========================== */
+
+/* Padding around the whole SFIA page */
+.skills-padding {
+    padding: 2rem 4rem;
+}
+
+/* White title box (matches Benefits page style) */
+.skills-title-box {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin: 0 auto 2rem auto;   /* center + space below */
+    text-align: center;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Green title text */
+.skills-title {
+    color: #22c55e;             /* bright green */
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* ===========================
+   SFIA Skills Accordion – full-width black bars
+   =========================== */
+
+.skills-accordion {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* each accordion item */
+.skill-item {
+    border-radius: 0;
+    overflow: hidden;
+    background: #000;
+    border-bottom: 2px solid #111;  /* thin separator like the example */
+}
+
+/* header row */
+.skill-item summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* remove default triangle marker (Chrome/Safari) */
+.skill-item summary::-webkit-details-marker {
+    display: none;
+}
+/* remove marker in Firefox/others */
+.skill-item summary::marker {
+    content: "";
+}
+
+/* left text (code + name) */
+.skill-text {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    min-width: 0;
+}
+
+.skill-code {
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.skill-name {
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* + / – icon on the right */
+.skill-toggle {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #c3ff00;   /* bright yellow-green like the example */
+    margin-left: 1rem;
+}
+
+/* expanded content */
+.skill-body {
+    padding: 1rem 1.5rem 1.2rem;
+    background: #000;
+    color: #f9fafb;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border-top: 1px solid #111;
+}
+
+/* Optional: a bit less padding on small screens */
+@media (max-width: 768px) {
+    .skills-padding {
+        padding: 1.5rem;
+    }
+
+    .skill-item summary {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .skill-body {
+        padding: 0.8rem 1rem 1rem;
+    }
+
+}
+.skills-title-box {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin: 0 0 2rem 0;   /* left aligned */
+    text-align: left;     /* text aligned left */
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+/* Page padding */
+.employer-dashboard-padding {
+    padding: 2rem;
+}
+
+/* Title Box */
+.employer-title-box {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Green title text */
+.employer-title {
+    color: #22c55e;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+/* Page padding */
+.student-dashboard-padding {
+    padding: 2rem;
+}
+
+/* Title Box */
+.student-title-box {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Green Title Text */
+.student-title {
+    color: #22c55e;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+/* Page padding */
+.admin-dashboard-padding {
+    padding: 2rem;
+}
+
+/* Title Box */
+.admin-title-box {
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    width: fit-content;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Green Title */
+.admin-title {
+    color: #22c55e;
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+/* Make footer stick to bottom */
+html, body {
+    height: 100%;
+}
+
+.page-wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.site-main {
+    flex: 1; /* pushes footer to the bottom */
+}
