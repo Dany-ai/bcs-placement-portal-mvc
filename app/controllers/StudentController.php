@@ -27,9 +27,7 @@ class StudentController extends Controller
         $studentProfile = $studentModel->findByUserId($user['id']);
 
         if (!$studentProfile) {
-            $this->view('student/profile_missing', [
-                'user' => $user
-            ]);
+            $this->view('student/profile_missing', ['user' => $user]);
             return;
         }
 
@@ -67,6 +65,8 @@ class StudentController extends Controller
         $success        = null;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->requireCsrf();
+
             $name    = trim($_POST['name'] ?? '');
             $phone   = trim($_POST['phone'] ?? '');
             $address = trim($_POST['address'] ?? '');
@@ -107,26 +107,25 @@ class StudentController extends Controller
         $success = null;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['cv'])) {
+            $this->requireCsrf();
+
             $file = $_FILES['cv'];
 
             if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
                 $error = 'File upload error.';
             } else {
-                // Limit size (3MB)
                 $maxBytes = 3 * 1024 * 1024;
                 $size = (int)($file['size'] ?? 0);
 
                 if ($size <= 0 || $size > $maxBytes) {
                     $error = 'CV must be a PDF under 3MB.';
                 } else {
-                    // Validate MIME type using finfo (server-side)
                     $finfo = new finfo(FILEINFO_MIME_TYPE);
                     $mime  = $finfo->file($file['tmp_name']);
 
                     if ($mime !== 'application/pdf') {
                         $error = 'Only PDF files are allowed.';
                     } else {
-                        // Signature check: first 4 bytes must be "%PDF"
                         $fh = fopen($file['tmp_name'], 'rb');
                         $sig = $fh ? fread($fh, 4) : '';
                         if ($fh) fclose($fh);
@@ -140,7 +139,6 @@ class StudentController extends Controller
                                 mkdir($targetDir, 0755, true);
                             }
 
-                            // Delete old CV if present
                             if (!empty($studentProfile['cv_filename'])) {
                                 $old = $targetDir . '/' . basename($studentProfile['cv_filename']);
                                 if (is_file($old)) {
@@ -196,6 +194,7 @@ class StudentController extends Controller
         ]);
     }
 
+    // Keep apply as GET for now (we'll convert to POST later)
     public function apply($placementId)
     {
         Session::init();
@@ -211,20 +210,16 @@ class StudentController extends Controller
         $studentProfile = $studentModel->findByUserId($user['id']);
 
         if (!$studentProfile) {
-            header('Location: ' . URL_ROOT . '/student/dashboard');
-            exit;
+            $this->redirect('/student/dashboard');
         }
 
         $placement = $placementModel->find($placementId);
         if (!$placement || (isset($placement['status']) && $placement['status'] !== 'approved')) {
-            header('Location: ' . URL_ROOT . '/student/matches');
-            exit;
+            $this->redirect('/student/matches');
         }
 
         $applicationModel->apply($placementId, $studentProfile['id']);
-
-        header('Location: ' . URL_ROOT . '/student/matches');
-        exit;
+        $this->redirect('/student/matches');
     }
 
     public function message($id)
@@ -237,8 +232,7 @@ class StudentController extends Controller
 
         $message = $messageModel->findForUser($id, $user['id']);
         if (!$message) {
-            header('Location: ' . URL_ROOT . '/student/dashboard');
-            exit;
+            $this->redirect('/student/dashboard');
         }
 
         $messageModel->markAsRead($id, $user['id']);
@@ -275,6 +269,8 @@ class StudentController extends Controller
         $careerId  = (int)$careerUser['id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->requireCsrf();
+
             $body = trim($_POST['body'] ?? '');
             if ($body !== '') {
                 $msgModel->send(
@@ -293,11 +289,9 @@ class StudentController extends Controller
             $msgModel->markConversationRead($studentId, $careerId);
         }
 
-        if (method_exists($msgModel, 'getConversationBetween')) {
-            $conversation = $msgModel->getConversationBetween($studentId, $careerId);
-        } else {
-            $conversation = [];
-        }
+        $conversation = method_exists($msgModel, 'getConversationBetween')
+            ? $msgModel->getConversationBetween($studentId, $careerId)
+            : [];
 
         $this->view('message/chat', [
             'conversation' => $conversation,

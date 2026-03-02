@@ -12,6 +12,8 @@
         <?php endif; ?>
 
         <form method="post" action="<?= URL_ROOT ?>/auth/registerCareer">
+            <?= $_csrfField ?? '' ?>
+
             <div class="form-field">
                 <label>Email <span style="color:red">*</span></label>
                 <input type="email" name="email" required>
