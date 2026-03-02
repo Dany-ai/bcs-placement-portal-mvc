@@ -1,9 +1,11 @@
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE IF NOT EXISTS employers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    company_name VARCHAR(255) NOT NULL,
-    contact_name VARCHAR(255) NULL,
-    phone VARCHAR(50) NULL,
-    address TEXT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL UNIQUE,
+  company_name TEXT NOT NULL,
+  contact_name TEXT NULL,
+  phone TEXT NULL,
+  address TEXT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

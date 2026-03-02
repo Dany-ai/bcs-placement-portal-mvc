@@ -24,10 +24,13 @@ A role-based placement management portal built using a custom PHP MVC architectu
 
 ---
 
-## Setup Instructions (Local Development)
+## Setup (Local)
 
-### 1. Clone the repository
+### Requirements
+- PHP 8+
+- Apache with `mod_rewrite` (XAMPP/Laragon ok)
 
+### 1) Clone
 ```bash
 git clone https://github.com/Dany-ai/bcs-placement-portal-mvc.git
 cd bcs-placement-portal-mvc

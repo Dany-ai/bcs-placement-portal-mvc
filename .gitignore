@@ -1,19 +1,51 @@
-# env
+# =========================
+# Environment / Secrets
+# =========================
 .env
 .env.*
+config/local.php
 
-# uploads / storage
-/public/uploads/
-/storage/
-/storage/**
-
-# sqlite db files (keep migrations)
+# =========================
+# SQLite database files
+# =========================
 database/*.sqlite
 database/*.sqlite-shm
 database/*.sqlite-wal
 
-# OS/IDE
+# =========================
+# Uploads / Storage
+# =========================
+storage/
+public/uploads/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
-.idea/
+desktop.ini
+
+# =========================
+# IDE / Editor
+# =========================
 .vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# XAMPP / System
+# =========================
+xampp-control.ini
+
+# =========================
+# Composer (if added later)
+# =========================
+vendor/
+composer.lock
