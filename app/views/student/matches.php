@@ -8,21 +8,20 @@
             <ul class="list">
                 <?php foreach ($matches as $match): ?>
                     <?php
-                    // Try to get a placement id: either 'placement_id' or 'id'
-                    $placementId = isset($match['placement_id'])
+                        $placementId = isset($match['placement_id'])
                             ? (int)$match['placement_id']
                             : (int)$match['id'];
 
-                    $applied = !empty($applicationsByPlacement[$placementId]);
+                        $applied = !empty($applicationsByPlacement[$placementId]);
                     ?>
                     <li>
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.75rem;">
                             <div>
-                                <strong><?= htmlspecialchars($match['title']) ?></strong>
-                                (<?= htmlspecialchars($match['company_name']) ?>,
-                                <?= htmlspecialchars($match['location']) ?>)
-                                <span class="badge">Match: <?= (int)$match['score'] ?>%</span><br>
-                                <span class="muted">Salary: <?= htmlspecialchars($match['salary']) ?></span><br>
+                                <strong><?= htmlspecialchars($match['title'] ?? '') ?></strong>
+                                (<?= htmlspecialchars($match['company_name'] ?? '') ?>,
+                                <?= htmlspecialchars($match['location'] ?? '') ?>)
+                                <span class="badge">Match: <?= (int)($match['score'] ?? 0) ?>%</span><br>
+                                <span class="muted">Salary: <?= htmlspecialchars($match['salary'] ?? '') ?></span><br>
                                 <span class="small">
                                     Skills required: <?= htmlspecialchars($match['skills_required'] ?? '') ?>
                                 </span>
@@ -35,11 +34,13 @@
                                         Applied
                                     </span><br>
                                 <?php else: ?>
-                                    <a href="<?= URL_ROOT ?>/student/apply/<?= $placementId ?>"
-                                       class="btn btn-primary btn-sm"
-                                       style="margin-bottom:0.25rem;">
-                                        Apply
-                                    </a><br>
+                                    <form method="post" action="<?= URL_ROOT ?>/student/apply" style="display:inline;">
+                                        <?= $_csrfField ?? '' ?>
+                                        <input type="hidden" name="placement_id" value="<?= $placementId ?>">
+                                        <button type="submit" class="btn btn-primary btn-sm" style="margin-bottom:0.25rem;">
+                                            Apply
+                                        </button>
+                                    </form><br>
                                 <?php endif; ?>
                             </div>
                         </div>

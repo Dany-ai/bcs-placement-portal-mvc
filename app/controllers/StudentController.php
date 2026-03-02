@@ -194,13 +194,25 @@ class StudentController extends Controller
         ]);
     }
 
-    // Keep apply as GET for now (we'll convert to POST later)
-    public function apply($placementId)
+    /**
+     * Student applies for a placement (POST).
+     * Route: /student/apply
+     */
+    public function apply()
     {
         Session::init();
         Auth::requireRole('student');
 
-        $placementId = (int)$placementId;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/student/matches');
+        }
+
+        $this->requireCsrf();
+
+        $placementId = (int)($_POST['placement_id'] ?? 0);
+        if ($placementId <= 0) {
+            $this->redirect('/student/matches');
+        }
 
         $studentModel     = $this->model('Student');
         $applicationModel = $this->model('Application');
@@ -219,6 +231,8 @@ class StudentController extends Controller
         }
 
         $applicationModel->apply($placementId, $studentProfile['id']);
+
+        $this->flash('success', 'Application submitted.');
         $this->redirect('/student/matches');
     }
 
