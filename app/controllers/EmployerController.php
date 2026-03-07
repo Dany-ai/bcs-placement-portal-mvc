@@ -9,14 +9,9 @@ class EmployerController extends Controller
 {
     public function index()
     {
-        // /employer behaves the same as /employer/dashboard
         $this->dashboard();
     }
 
-    /**
-     * Main employer dashboard.
-     * Shows organisation info, placements, and inbox messages.
-     */
     public function dashboard()
     {
         Session::init();
@@ -28,9 +23,8 @@ class EmployerController extends Controller
 
         $user       = Auth::user();
         $employer   = $employerModel->findByUserId($user['id']);
-        $placements = $placementModel->findByEmployer($employer['id']);
+        $placements = $employer ? $placementModel->findByEmployer($employer['id']) : [];
 
-        // Messages for this employer user
         $messages    = $messageModel->getForUser($user['id']);
         $unreadCount = $messageModel->countUnreadForUser($user['id']);
 
@@ -42,9 +36,6 @@ class EmployerController extends Controller
         ]);
     }
 
-    /**
-     * View + edit organisation information.
-     */
     public function profile()
     {
         Session::init();
@@ -55,33 +46,38 @@ class EmployerController extends Controller
         $employer      = $employerModel->findByUserId($user['id']);
 
         $success = '';
+        $error   = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->requireCsrf();
+
             $company_name = trim($_POST['company_name'] ?? '');
             $contact_name = trim($_POST['contact_name'] ?? '');
             $phone        = trim($_POST['phone'] ?? '');
             $address      = trim($_POST['address'] ?? '');
 
-            $employerModel->updateProfile($user['id'], [
-                'company_name' => $company_name,
-                'contact_name' => $contact_name,
-                'phone'        => $phone,
-                'address'      => $address,
-            ]);
+            if ($company_name === '') {
+                $error = 'Company name is required.';
+            } else {
+                $employerModel->updateProfile($user['id'], [
+                    'company_name' => $company_name,
+                    'contact_name' => $contact_name,
+                    'phone'        => $phone,
+                    'address'      => $address,
+                ]);
 
-            $success  = 'Organisation details updated successfully.';
-            $employer = $employerModel->findByUserId($user['id']);
+                $success  = 'Organisation details updated successfully.';
+                $employer = $employerModel->findByUserId($user['id']);
+            }
         }
 
         $this->view('employer/profile', [
             'employer' => $employer,
             'success'  => $success,
+            'error'    => $error,
         ]);
     }
 
-    /**
-     * Show form to create a new placement.
-     */
     public function createPlacement()
     {
         Session::init();
@@ -90,23 +86,26 @@ class EmployerController extends Controller
         $this->view('employer/create_placement');
     }
 
-    /**
-     * Handle form submission for new placement.
-     */
     public function storePlacement()
     {
         Session::init();
         Auth::requireRole('employer');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . URL_ROOT . '/employer/createPlacement');
-            exit;
+            $this->redirect('/employer/createPlacement');
         }
+
+        $this->requireCsrf();
 
         $placementModel = $this->model('Placement');
         $employerModel  = $this->model('Employer');
         $user           = Auth::user();
         $employer       = $employerModel->findByUserId($user['id']);
+
+        if (!$employer) {
+            $this->flash('error', 'Employer profile not found.');
+            $this->redirect('/employer/dashboard');
+        }
 
         $data = [
             'title'           => trim($_POST['title'] ?? ''),
@@ -118,15 +117,17 @@ class EmployerController extends Controller
             'end_date'        => $_POST['end_date'] ?? null,
         ];
 
+        if ($data['title'] === '' || $data['description'] === '') {
+            $this->flash('error', 'Title and description are required.');
+            $this->redirect('/employer/createPlacement');
+        }
+
         $placementModel->create($employer['id'], $data);
 
-        header('Location: ' . URL_ROOT . '/employer/dashboard');
-        exit;
+        $this->flash('success', 'Placement created and submitted for review.');
+        $this->redirect('/employer/dashboard');
     }
 
-    /**
-     * Show all placements for this employer (separate page).
-     */
     public function placements()
     {
         Session::init();
@@ -136,7 +137,7 @@ class EmployerController extends Controller
         $placementModel = $this->model('Placement');
         $user           = Auth::user();
         $employer       = $employerModel->findByUserId($user['id']);
-        $placements     = $placementModel->findByEmployer($employer['id']);
+        $placements     = $employer ? $placementModel->findByEmployer($employer['id']) : [];
 
         $this->view('employer/placements', [
             'employer'   => $employer,
@@ -144,9 +145,6 @@ class EmployerController extends Controller
         ]);
     }
 
-    /**
-     * Edit placement form.
-     */
     public function editPlacement($id)
     {
         Session::init();
@@ -159,10 +157,8 @@ class EmployerController extends Controller
 
         $placement = $placementModel->find($id);
 
-        // Basic ownership check – only allow owner employer to edit
-        if (!$placement || (int)$placement['employer_id'] !== (int)$employer['id']) {
-            header('Location: ' . URL_ROOT . '/employer/dashboard');
-            exit;
+        if (!$placement || !$employer || (int)$placement['employer_id'] !== (int)$employer['id']) {
+            $this->redirect('/employer/dashboard');
         }
 
         $this->view('employer/edit_placement', [
@@ -170,23 +166,26 @@ class EmployerController extends Controller
         ]);
     }
 
-    /**
-     * Handle edit placement submission.
-     */
     public function updatePlacement($id)
     {
         Session::init();
         Auth::requireRole('employer');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . URL_ROOT . '/employer/dashboard');
-            exit;
+            $this->redirect('/employer/dashboard');
         }
+
+        $this->requireCsrf();
 
         $placementModel = $this->model('Placement');
         $employerModel  = $this->model('Employer');
         $user           = Auth::user();
         $employer       = $employerModel->findByUserId($user['id']);
+
+        if (!$employer) {
+            $this->flash('error', 'Employer profile not found.');
+            $this->redirect('/employer/dashboard');
+        }
 
         $data = [
             'title'           => trim($_POST['title'] ?? ''),
@@ -198,40 +197,44 @@ class EmployerController extends Controller
             'end_date'        => $_POST['end_date'] ?? null,
         ];
 
+        if ($data['title'] === '' || $data['description'] === '') {
+            $this->flash('error', 'Title and description are required.');
+            $this->redirect('/employer/dashboard');
+        }
+
         $placementModel->update($id, $employer['id'], $data);
 
-        header('Location: ' . URL_ROOT . '/employer/dashboard');
-        exit;
+        $this->flash('success', 'Placement updated successfully.');
+        $this->redirect('/employer/dashboard');
     }
 
-    /**
-     * Delete a placement.
-     */
     public function deletePlacement($id)
     {
         Session::init();
         Auth::requireRole('employer');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . URL_ROOT . '/employer/dashboard');
-            exit;
+            $this->redirect('/employer/dashboard');
         }
+
+        $this->requireCsrf();
 
         $placementModel = $this->model('Placement');
         $employerModel  = $this->model('Employer');
         $user           = Auth::user();
         $employer       = $employerModel->findByUserId($user['id']);
 
+        if (!$employer) {
+            $this->flash('error', 'Employer profile not found.');
+            $this->redirect('/employer/dashboard');
+        }
+
         $placementModel->delete($id, $employer['id']);
 
-        header('Location: ' . URL_ROOT . '/employer/dashboard');
-        exit;
+        $this->flash('success', 'Placement deleted.');
+        $this->redirect('/employer/dashboard');
     }
 
-    /**
-     * View a single message and mark it as read.
-     * URL: /employer/message/{id}
-     */
     public function message($id)
     {
         Session::init();
@@ -240,14 +243,11 @@ class EmployerController extends Controller
         $messageModel = $this->model('Message');
         $user         = Auth::user();
 
-        // Ensure message belongs to this employer's user account
         $message = $messageModel->findForUser($id, $user['id']);
         if (!$message) {
-            header('Location: ' . URL_ROOT . '/employer/dashboard');
-            exit;
+            $this->redirect('/employer/dashboard');
         }
 
-        // Mark as read
         $messageModel->markAsRead($id, $user['id']);
 
         $this->view('message/view', [
@@ -256,10 +256,6 @@ class EmployerController extends Controller
         ]);
     }
 
-    /**
-     * View applicants for a specific placement.
-     * URL: /employer/applicants/{placementId}
-     */
     public function applicants($placementId)
     {
         Session::init();
@@ -274,15 +270,12 @@ class EmployerController extends Controller
         $employerProfile = $employerModel->findByUserId($user['id']);
 
         if (!$employerProfile) {
-            header('Location: ' . URL_ROOT . '/employer/dashboard');
-            exit;
+            $this->redirect('/employer/dashboard');
         }
 
         $placement = $placementModel->find($placementId);
         if (!$placement || (int)$placement['employer_id'] !== (int)$employerProfile['id']) {
-            // placement does not belong to this employer
-            header('Location: ' . URL_ROOT . '/employer/dashboard');
-            exit;
+            $this->redirect('/employer/dashboard');
         }
 
         $applicants = $applicationModel->getApplicantsForPlacement($placementId);

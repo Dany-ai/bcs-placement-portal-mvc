@@ -12,9 +12,6 @@ class AdminController extends Controller
         $this->dashboard();
     }
 
-    /**
-     * Admin dashboard: show pending placements + students for chat.
-     */
     public function dashboard()
     {
         Session::init();
@@ -26,8 +23,6 @@ class AdminController extends Controller
         $adminUser      = Auth::user();
 
         $pendingPlacements = $placementModel->findPending();
-
-        // Search term from query string (?q=...)
         $searchTerm = trim($_GET['q'] ?? '');
 
         if ($searchTerm !== '' && method_exists($studentModel, 'searchWithUser')) {
@@ -36,11 +31,10 @@ class AdminController extends Controller
             $students = $studentModel->allWithUser();
         }
 
-        // For each student, compute unread messages from that student -> this admin
         foreach ($students as &$s) {
             $unread = $messageModel->countUnreadFromUserToUser(
-                $s['user_id'],          // sender: student
-                $adminUser['id']        // recipient: admin
+                $s['user_id'],
+                $adminUser['id']
             );
             $s['unread_from_student'] = $unread;
         }
@@ -53,31 +47,29 @@ class AdminController extends Controller
         ]);
     }
 
-    /**
-     * Approve a placement.
-     * URL: /admin/approvePlacement/{id}
-     */
     public function approvePlacement($id)
     {
         Session::init();
         Auth::requireRole('admin');
 
-        $placementModel = $this->model('Placement');
-        $messageModel   = $this->model('Message');
-
-        $adminUser = Auth::user();
-
-        // Get placement + employer info
-        $placement = $placementModel->find($id);
-        if (!$placement) {
-            header('Location: ' . URL_ROOT . '/admin/dashboard');
-            exit;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/admin/dashboard');
         }
 
-        // Update status to approved
+        $this->requireCsrf();
+
+        $placementModel = $this->model('Placement');
+        $messageModel   = $this->model('Message');
+        $adminUser      = Auth::user();
+
+        $placement = $placementModel->find($id);
+        if (!$placement) {
+            $this->flash('error', 'Placement not found.');
+            $this->redirect('/admin/dashboard');
+        }
+
         $placementModel->setStatus($id, 'approved', $adminUser['id']);
 
-        // Find employer's user ID via join
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("
             SELECT u.id AS user_id, e.company_name
@@ -91,38 +83,37 @@ class AdminController extends Controller
 
         if ($row) {
             $subject = 'Placement approved';
-            $body    = "Your placement \"{$placement['title']}\" has been approved by the admin and is now visible to students.";
+            $body = "Your placement \"{$placement['title']}\" has been approved by the admin and is now visible to students.";
             $messageModel->send($row['user_id'], $subject, $body, $adminUser['id']);
         }
 
-        header('Location: ' . URL_ROOT . '/admin/dashboard');
-        exit;
+        $this->flash('success', 'Placement approved.');
+        $this->redirect('/admin/dashboard');
     }
 
-    /**
-     * Reject a placement.
-     * URL: /admin/rejectPlacement/{id}
-     */
     public function rejectPlacement($id)
     {
         Session::init();
         Auth::requireRole('admin');
 
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/admin/dashboard');
+        }
+
+        $this->requireCsrf();
+
         $placementModel = $this->model('Placement');
         $messageModel   = $this->model('Message');
-
-        $adminUser = Auth::user();
+        $adminUser      = Auth::user();
 
         $placement = $placementModel->find($id);
         if (!$placement) {
-            header('Location: ' . URL_ROOT . '/admin/dashboard');
-            exit;
+            $this->flash('error', 'Placement not found.');
+            $this->redirect('/admin/dashboard');
         }
 
-        // Update status to rejected
         $placementModel->setStatus($id, 'rejected', $adminUser['id']);
 
-        // Find employer's user ID
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("
             SELECT u.id AS user_id, e.company_name
@@ -136,65 +127,54 @@ class AdminController extends Controller
 
         if ($row) {
             $subject = 'Placement not approved';
-            $body    = "Your placement \"{$placement['title']}\" has been reviewed and was not approved at this time.\n\n".
-                "You may edit the placement and resubmit if appropriate.";
+            $body    = "Your placement \"{$placement['title']}\" has been reviewed and was not approved at this time.\n\n" .
+                       "You may edit the placement and resubmit if appropriate.";
             $messageModel->send($row['user_id'], $subject, $body, $adminUser['id']);
         }
 
-        header('Location: ' . URL_ROOT . '/admin/dashboard');
-        exit;
+        $this->flash('success', 'Placement rejected.');
+        $this->redirect('/admin/dashboard');
     }
 
-    /**
-     * Career support/admin chat with a specific student.
-     * URL: /admin/chatStudent/{studentUserId}
-     */
     public function chatStudent($studentUserId)
     {
         Session::init();
         Auth::requireRole('admin');
 
-        $adminUser     = Auth::user();          // current admin / career support user
+        $adminUser     = Auth::user();
         $msgModel      = $this->model('Message');
         $studentModel  = $this->model('Student');
 
         $studentUserId = (int)$studentUserId;
-
-        // Student profile via user_id
         $studentProfile = $studentModel->findByUserId($studentUserId);
 
         if (!$studentProfile) {
-            header('Location: ' . URL_ROOT . '/admin/dashboard');
-            exit;
+            $this->redirect('/admin/dashboard');
         }
 
-        // Handle new message POST from admin to student
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->requireCsrf();
+
             $body = trim($_POST['body'] ?? '');
             if ($body !== '') {
                 $msgModel->send(
-                    $studentUserId,                  // recipient_user_id
-                    'Career support message',        // subject
-                    $body,                           // body
-                    $adminUser['id']                 // sender_user_id
+                    $studentUserId,
+                    'Career support message',
+                    $body,
+                    $adminUser['id']
                 );
             }
 
-            header('Location: ' . URL_ROOT . '/admin/chatStudent/' . $studentUserId);
-            exit;
+            $this->redirect('/admin/chatStudent/' . $studentUserId);
         }
 
-        // Mark all messages from this student to the admin as read
         if (method_exists($msgModel, 'markConversationRead')) {
             $msgModel->markConversationRead($adminUser['id'], $studentUserId);
         }
 
-        // Get full conversation (both directions)
-        if (method_exists($msgModel, 'getConversationBetween')) {
-            $conversation = $msgModel->getConversationBetween($adminUser['id'], $studentUserId);
-        } else {
-            $conversation = [];
-        }
+        $conversation = method_exists($msgModel, 'getConversationBetween')
+            ? $msgModel->getConversationBetween($adminUser['id'], $studentUserId)
+            : [];
 
         $this->view('message/chat', [
             'conversation' => $conversation,
