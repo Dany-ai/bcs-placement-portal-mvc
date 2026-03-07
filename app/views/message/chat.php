@@ -4,7 +4,7 @@
             <h2 style="margin:0;">
                 Chat with <?= htmlspecialchars($otherUser['name'] ?? 'Career Support') ?>
             </h2>
-            <a href="<?= $backUrl ?>"
+            <a href="<?= htmlspecialchars($backUrl ?? URL_ROOT) ?>"
                style="font-size:0.8rem; text-decoration:none; padding:4px 10px; border-radius:6px; background:#e5e7eb;">
                 ← Back
             </a>
@@ -27,22 +27,22 @@
         ">
             <?php if (!empty($conversation)): ?>
                 <?php foreach ($conversation as $msg): ?>
-                    <?php $isMe = ($msg['sender_user_id'] == $currentUser['id']); ?>
+                    <?php $isMe = (($msg['sender_user_id'] ?? null) == ($currentUser['id'] ?? null)); ?>
                     <div style="margin-bottom:0.5rem; text-align:<?= $isMe ? 'right' : 'left' ?>;">
                         <div style="
-                                display:inline-block;
-                                padding:6px 10px;
-                                border-radius:12px;
-                                background:<?= $isMe ? '#2563eb' : '#e5e7eb' ?>;
-                                color:<?= $isMe ? '#fff' : '#111827' ?>;
-                                max-width:80%;
-                                text-align:left;
-                                font-size:0.9rem;
-                                ">
-                            <?= nl2br(htmlspecialchars($msg['body'])) ?>
+                            display:inline-block;
+                            padding:6px 10px;
+                            border-radius:12px;
+                            background:<?= $isMe ? '#2563eb' : '#e5e7eb' ?>;
+                            color:<?= $isMe ? '#fff' : '#111827' ?>;
+                            max-width:80%;
+                            text-align:left;
+                            font-size:0.9rem;
+                        ">
+                            <?= nl2br(htmlspecialchars($msg['body'] ?? '')) ?>
                         </div>
                         <div class="small muted" style="margin-top:2px;">
-                            <?= htmlspecialchars($msg['created_at']) ?>
+                            <?= htmlspecialchars($msg['created_at'] ?? '') ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -52,23 +52,24 @@
         </div>
 
         <form method="post">
+            <?= $_csrfField ?? '' ?>
+
             <label style="display:block; margin-bottom:0.5rem;">
                 <span class="small muted">Type your message</span>
                 <textarea name="body" rows="3" style="width:100%;"></textarea>
             </label>
+
             <button type="submit" class="btn btn-primary">Send</button>
         </form>
     </div>
 </section>
 
 <script>
-    // Simple auto-refresh chat every 5 seconds.
-    // Skips reload if the user is currently typing in an input/textarea.
     (function () {
         setInterval(function () {
             var active = document.activeElement;
             if (active && (active.tagName === 'TEXTAREA' || active.tagName === 'INPUT')) {
-                return; // don't interrupt typing
+                return;
             }
             window.location.reload();
         }, 5000);
